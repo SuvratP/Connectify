@@ -16,26 +16,26 @@ import UploadRoute from "./Routes/UploadRoute.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// App config
 dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
-// Serve static files (like images)
+// Serve static files (like uploaded images)
 app.use("/images", express.static(path.join(__dirname, "public/images")));
 
-// Routes
+// API Routes
 app.use("/auth", AuthRoute);
 app.use("/user", UserRoute);
 app.use("/post", PostRoute);
 app.use("/upload", UploadRoute);
 
-// ======= Serve React Frontend Build =======
-
-// Serve static React build from client
+// ======= Serve React Frontend in Production (Render) =======
 app.use(express.static(path.join(__dirname, "client/build")));
 
 app.get("*", (req, res) => {
@@ -43,15 +43,16 @@ app.get("*", (req, res) => {
 });
 
 // ======= MongoDB Connection & Server Start =======
-
-const PORT = process.env.PORT || 5000;
 mongoose
-  .connect(process.env.MONGO_DB)
+  .connect(process.env.MONGO_DB, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((error) => {
-    console.log("MongoDB Connection Error:", error.message);
+    console.log("❌ MongoDB Connection Error:", error.message);
   });
