@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {
-  "start": "node index.js",
-  "dev": "nodemon index.js"
+ "scripts": {
+  "build": "npm rebuild bcrypt",
+  "start": "node index.js"
 }
+
 ,
   "author": "",
   "license": "ISC",
