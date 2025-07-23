@@ -36,11 +36,11 @@ app.use("/post", PostRoute);
 app.use("/upload", UploadRoute);
 
 // ======= Serve React Frontend in Production (Render) =======
-app.use(express.static(path.join(__dirname, "client/build")));
-
+app.use(express.static(path.join(__dirname, "../client/build")));
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/build", "index.html"));
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
+
 
 // ======= MongoDB Connection & Server Start =======
 mongoose
