@@ -12,8 +12,14 @@ import { likePost } from '../../api/PostRequest'
 
 const Post = ({data}) => {
   const {user}= useSelector((state)=>state.authReducer.authData)
-  const [liked, setLiked] = useState(data.likes.includes(user._id));
-  const [likes, setLikes] = useState(data.likes.length)
+  const [liked, setLiked] = useState(
+    Array.isArray(data.likes) ? data.likes.includes(user._id) : false
+  );
+  
+  const [likes, setLikes] = useState(
+    Array.isArray(data.likes) ? data.likes.length : 0
+  );
+  
   const handleLike =() => {
     setLiked((prev) =>! prev);
     likePost(data._id, user._id)

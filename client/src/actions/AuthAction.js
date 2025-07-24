@@ -17,6 +17,8 @@ export const signUp = (formData, navigate) => async (dispatch) => {
   dispatch({ type: "AUTH_START" });
   try {
     const { data } = await AuthApi.signUp(formData);
+    console.log("Backend Response (action.data):", data);
+
     dispatch({ type: "AUTH_SUCCESS", data: data });
     // navigate("../home", { replace: true });
   } catch (error) {
