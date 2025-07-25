@@ -1,66 +1,61 @@
 import React, { useState, useRef } from "react";
-// import ProfileImage from "../../img/profileImg.jpg";
 import "./PostShare.css";
-import { UilScenery } from "@iconscout/react-unicons";
-import { UilPlayCircle } from "@iconscout/react-unicons";
-import { UilLocationPoint } from "@iconscout/react-unicons";
-import { UilSchedule } from "@iconscout/react-unicons";
-import { UilTimes } from "@iconscout/react-unicons";
+import { UilScenery, UilPlayCircle, UilLocationPoint, UilSchedule, UilTimes } from "@iconscout/react-unicons";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadImage, uploadPost } from "../../actions/uploadAction";
 
-// import { uploadImage, uploadPost } from "../../actions/uploadAction";
-// import { isAction } from "redux";
-
-
 const PostShare = () => {
-  const loading = useSelector((state)=>state.postReducer.uploading)
+  const loading = useSelector((state) => state.postReducer.uploading);
   const [image, setImage] = useState(null);
   const imageRef = useRef();
-  const dispatch = useDispatch()
-  const serverPublic = process.env.REACT_APP_PUBLIC_FOLDER
-
-  const desc = useRef()
-  const {user}=useSelector((state)=>state.authReducer.authData)
+  const desc = useRef();
+  const dispatch = useDispatch();
+  const serverPublic = process.env.REACT_APP_PUBLIC_FOLDER;
+  const { user } = useSelector((state) => state.authReducer.authData);
 
   const onImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      let img = event.target.files[0];
-      setImage(img);
+      setImage(event.target.files[0]);
     }
   };
 
-  const reset=()=>{
-    setImage(null)
-    desc.current.value=""
-  }
+  const reset = () => {
+    setImage(null);
+    desc.current.value = "";
+  };
 
-  const handleSubmit = (e)=>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newPost = {
-      userId : user._id,
-      desc: desc.current.value
-    }
-    if(image){
-      const data = new FormData()
-      const filename = Date.now() + image.name
-      data.append("name", filename)
-      data.append("file", image)
-      newPost.image = filename
-      console.log(newPost)
-      try {
-        dispatch(uploadImage(data));
-      } catch (error) {
-        console.log(error);
+      userId: user._id,
+      desc: desc.current.value,
+    };
+
+    try {
+      if (image) {
+        const data = new FormData();
+        data.append("file", image);
+
+        // Wait for Cloudinary upload
+        const response = await dispatch(uploadImage(data));
+
+        if (response?.data?.url) {
+          newPost.image = response.data.url;
+        } else {
+          console.error("Cloudinary did not return a URL.");
+          return;
+        }
       }
+
+      // Upload post with image URL
+      await dispatch(uploadPost(newPost));
+      reset();
+    } catch (error) {
+      console.error("Post upload failed:", error);
     }
-    dispatch(uploadPost(newPost))
-    reset()
-    
-  }
-  
-  
+  };
+
   return (
     <div className="PostShare">
       <img
@@ -72,13 +67,17 @@ const PostShare = () => {
         alt="Profile"
       />
       <div>
-        <input 
-        ref = {desc}
-        required
-        type="text" placeholder="What's happening" />
+        <input
+          ref={desc}
+          required
+          type="text"
+          placeholder="What's happening"
+        />
         <div className="postOptions">
-          <div className="option" style={{ color: "var(--photo)" }}
-          onClick={()=>imageRef.current.click()}
+          <div
+            className="option"
+            style={{ color: "var(--photo)" }}
+            onClick={() => imageRef.current.click()}
           >
             <UilScenery />
             Photo
@@ -86,19 +85,21 @@ const PostShare = () => {
           <div className="option" style={{ color: "var(--video)" }}>
             <UilPlayCircle />
             Video
-          </div>{" "}
+          </div>
           <div className="option" style={{ color: "var(--location)" }}>
             <UilLocationPoint />
             Location
-          </div>{" "}
+          </div>
           <div className="option" style={{ color: "var(--shedule)" }}>
             <UilSchedule />
-            Shedule
+            Schedule
           </div>
-          <button className="button ps-button"
-          onClick={handleSubmit}
-          disabled={loading}
-          >{loading? "Uploading...":"Share"}
+          <button
+            className="button ps-button"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "Uploading..." : "Share"}
           </button>
           <div style={{ display: "none" }}>
             <input
@@ -109,16 +110,13 @@ const PostShare = () => {
             />
           </div>
         </div>
-      {image && (
 
-        <div className="previewImage">
-          <UilTimes onClick={()=>setImage(null)}/>
-          <img src={URL.createObjectURL (image) }alt="" />
-        </div>
-
-      )}
-
-
+        {image && (
+          <div className="previewImage">
+            <UilTimes onClick={() => setImage(null)} />
+            <img src={URL.createObjectURL(image)} alt="" />
+          </div>
+        )}
       </div>
     </div>
   );
