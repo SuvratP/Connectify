@@ -5,12 +5,11 @@ import "./App.css";
 import Auth from "./pages/Auth/Auth";
 import Home from "./pages/home/Home";
 import Profile from "./pages/Profile/Profile";
+import Chat from "./pages/Chat/Chat"; // ✅ Import Chat component
 import { Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
   const authData = useSelector((state) => state.authReducer.authData);
-
-  // Optional: Add a guard to ensure user object is valid
   const user = authData && authData.user;
 
   return (
@@ -35,12 +34,13 @@ function App() {
           path="/profile/:id"
           element={user ? <Profile /> : <Navigate to="/auth" />}
         />
+        <Route
+          path="/chat"
+          element={user ? <Chat /> : <Navigate to="/auth" />} // ✅ Fixed
+        />
       </Routes>
     </div>
   );
 }
 
 export default App;
-
-
-// updated

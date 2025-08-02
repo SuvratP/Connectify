@@ -12,6 +12,7 @@ function ProfileModal({ modalOpened, setModalOpened, data }) {
   const [coverImage, setCoverImage] = useState(null);
   const dispatch = useDispatch();
   const param = useParams();
+  // const{user} = useSelector((state)=>state.authreducer.authdata);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,7 +28,7 @@ function ProfileModal({ modalOpened, setModalOpened, data }) {
   };
 
   // ✅ CHANGED: API endpoint for image upload to backend (Cloudinary route)
-  const UPLOAD_API = "https://sever-cuverse.onrender.com/upload/uploadProfileOrCover"
+  const UPLOAD_API = "https://sever-cuverse-1.onrender.com/upload/uploadProfileOrCover"
 ;
   // const UPLOAD_API = "https://connectify-fs61.onrender.com/api/upload/uploadProfileOrCover";
 

@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 
-const API = axios.create({ baseURL: 'https://sever-cuverse.onrender.com' });
+const API = axios.create({ baseURL: 'https://sever-cuverse-1.onrender.com' });
 
 export const logIn= (formData)=> API.post('/auth/login',formData);
 
